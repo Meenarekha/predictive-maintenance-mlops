@@ -1,0 +1,29 @@
+# Virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables / secrets
+.env
+
+# Generated ML artifacts
+artifacts/
+
+# Raw datasets
+data/raw/
+
+# MLflow
+mlruns/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
