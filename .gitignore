@@ -16,7 +16,8 @@ __pycache__/
 artifacts/
 
 # Raw datasets
-data/raw/
+data/raw/*
+!data/raw/CMaps.dvc
 
 # MLflow
 mlruns/
