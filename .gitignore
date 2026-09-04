@@ -27,3 +27,6 @@ mlruns/
 # OS files
 .DS_Store
 Thumbs.db
+# Local model and evaluation outputs
+models/
+results/
