@@ -1,7 +1,12 @@
 import os
 import sys
+import mlflow
 
+
+# ---------------------------------------------------------
 # Allow imports from src subdirectories
+# ---------------------------------------------------------
+
 sys.path.append(
     os.path.join(
         os.path.dirname(__file__),
@@ -22,6 +27,11 @@ sys.path.append(
         "models"
     )
 )
+
+
+# ---------------------------------------------------------
+# Import project modules
+# ---------------------------------------------------------
 
 from data_ingestion import load_training_data
 from preprocessing import add_rul_column
@@ -59,127 +69,172 @@ def run_pipeline():
     print("=" * 60)
 
     # -----------------------------------------------------
-    # Step 1: Data ingestion
+    # Start ONE MLflow run for the complete pipeline
     # -----------------------------------------------------
 
-    print("\n[1/6] Loading data...")
+    with mlflow.start_run(
+        run_name="final-gradient-boosting"
+    ):
 
-    df = load_training_data(
-        DATA_PATH
-    )
+        # -------------------------------------------------
+        # Step 1: Data ingestion
+        # -------------------------------------------------
 
-    print(f"Loaded data: {df.shape}")
+        print("\n[1/6] Loading data...")
 
-
-    # -----------------------------------------------------
-    # Step 2: Preprocessing
-    # -----------------------------------------------------
-
-    print("\n[2/6] Adding RUL...")
-
-    df = add_rul_column(
-        df
-    )
-
-    print("RUL calculated successfully.")
-
-
-    # -----------------------------------------------------
-    # Step 3: Train/validation split
-    # -----------------------------------------------------
-
-    print("\n[3/6] Splitting by engine...")
-
-    train_df, validation_df = split_by_engine(
-        df
-    )
-
-    print(
-        f"Training engines: "
-        f"{train_df['engine'].nunique()}"
-    )
-
-    print(
-        f"Validation engines: "
-        f"{validation_df['engine'].nunique()}"
-    )
-
-
-    # -----------------------------------------------------
-    # Step 4: Feature selection
-    # -----------------------------------------------------
-
-    print("\n[4/6] Selecting features...")
-
-    X_train, feature_names = select_features(
-        train_df
-    )
-
-    X_validation, _ = select_features(
-        validation_df
-    )
-
-    y_train = train_df["RUL"]
-
-    y_validation = validation_df["RUL"]
-
-    print(
-        f"Number of features: "
-        f"{len(feature_names)}"
-    )
-
-
-    # -----------------------------------------------------
-    # Step 5: Train model
-    # -----------------------------------------------------
-
-    print("\n[5/6] Training Gradient Boosting model...")
-
-    model = train_model(
-        X_train,
-        y_train,
-        MODEL_PATH
-    )
-
-    print(
-        f"Model saved to: "
-        f"{MODEL_PATH}"
-    )
-
-
-    # -----------------------------------------------------
-    # Step 6: Evaluate
-    # -----------------------------------------------------
-
-    print("\n[6/6] Evaluating model...")
-
-    metrics = evaluate_model(
-        model,
-        X_validation,
-        y_validation,
-        METRICS_PATH,
-        PREDICTIONS_PATH
-    )
-
-    print("\nFinal metrics:")
-
-    for metric, value in metrics.items():
-        print(
-            f"{metric}: {value:.4f}"
+        df = load_training_data(
+            DATA_PATH
         )
 
-    print(
-        f"\nMetrics saved to: "
-        f"{METRICS_PATH}"
-    )
+        print(
+            f"Loaded data: {df.shape}"
+        )
+
+        # -------------------------------------------------
+        # Step 2: Preprocessing
+        # -------------------------------------------------
+
+        print("\n[2/6] Adding RUL...")
+
+        df = add_rul_column(
+            df
+        )
+
+        print(
+            "RUL calculated successfully."
+        )
+
+        # -------------------------------------------------
+        # Step 3: Train/validation split
+        # -------------------------------------------------
+
+        print(
+            "\n[3/6] Splitting by engine..."
+        )
+
+        train_df, validation_df = split_by_engine(
+            df
+        )
+
+        print(
+            f"Training engines: "
+            f"{train_df['engine'].nunique()}"
+        )
+
+        print(
+            f"Validation engines: "
+            f"{validation_df['engine'].nunique()}"
+        )
+
+        # -------------------------------------------------
+        # Step 4: Feature selection
+        # -------------------------------------------------
+
+        print(
+            "\n[4/6] Selecting features..."
+        )
+
+        X_train, feature_names = select_features(
+            train_df
+        )
+
+        X_validation, _ = select_features(
+            validation_df
+        )
+
+        y_train = train_df["RUL"]
+
+        y_validation = validation_df["RUL"]
+
+        print(
+            f"Number of features: "
+            f"{len(feature_names)}"
+        )
+
+        # -------------------------------------------------
+        # Log dataset/training information to MLflow
+        # -------------------------------------------------
+
+        mlflow.log_params({
+            "dataset": "C-MAPSS FD001",
+            "training_engines": train_df["engine"].nunique(),
+            "validation_engines": validation_df["engine"].nunique(),
+            "number_of_features": len(feature_names),
+            "training_rows": len(X_train),
+            "validation_rows": len(X_validation)
+        })
+
+        # -------------------------------------------------
+        # Step 5: Train model
+        # -------------------------------------------------
+
+        print(
+            "\n[5/6] Training Gradient Boosting model..."
+        )
+
+        model = train_model(
+            X_train,
+            y_train,
+            MODEL_PATH
+        )
+
+        print(
+            f"Model saved to: "
+            f"{MODEL_PATH}"
+        )
+
+        # -------------------------------------------------
+        # Step 6: Evaluate
+        # -------------------------------------------------
+
+        print(
+            "\n[6/6] Evaluating model..."
+        )
+
+        metrics = evaluate_model(
+            model,
+            X_validation,
+            y_validation,
+            METRICS_PATH,
+            PREDICTIONS_PATH
+        )
+
+        # -------------------------------------------------
+        # Print final metrics
+        # -------------------------------------------------
+
+        print(
+            "\nFinal metrics:"
+        )
+
+        for metric, value in metrics.items():
+
+            print(
+                f"{metric}: {value:.4f}"
+            )
+
+        print(
+            f"\nMetrics saved to: "
+            f"{METRICS_PATH}"
+        )
+
+        print(
+            f"Predictions saved to: "
+            f"{PREDICTIONS_PATH}"
+        )
+
+    # -----------------------------------------------------
+    # MLflow run is automatically ended here
+    # -----------------------------------------------------
 
     print(
-        f"Predictions saved to: "
-        f"{PREDICTIONS_PATH}"
+        "\nPipeline completed successfully."
     )
 
-    print("\nPipeline completed successfully.")
 
+# ---------------------------------------------------------
+# Run pipeline
+# ---------------------------------------------------------
 
 if __name__ == "__main__":
     run_pipeline()
