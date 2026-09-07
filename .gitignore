@@ -29,5 +29,6 @@ mlruns/
 .DS_Store
 Thumbs.db
 # Local model and evaluation outputs
-models/
+models/*
+!models/final_gradient_boosting.pkl
 results/
