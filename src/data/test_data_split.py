@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("src/data")
-
 from data_ingestion import load_training_data
 from preprocessing import add_rul_column
 from data_split import split_by_engine
@@ -10,48 +6,33 @@ from data_split import split_by_engine
 DATA_PATH = "data/raw/CMaps/train_FD001.txt"
 
 
-# Load raw data
-df = load_training_data(DATA_PATH)
+def test_split_by_engine():
+    # Load data
+    df = load_training_data(DATA_PATH)
 
-# Add RUL
-df = add_rul_column(df)
+    # Add RUL
+    df = add_rul_column(df)
 
-# Split by engine
-train_df, validation_df = split_by_engine(df)
+    # Split by engine
+    train_df, validation_df = split_by_engine(df)
 
+    # Check total rows are preserved
+    assert len(train_df) + len(validation_df) == len(df)
 
-print("Data split test successful.")
+    # Check expected number of engines
+    assert train_df["engine"].nunique() == 80
+    assert validation_df["engine"].nunique() == 20
 
-print("\nTraining:")
-print(f"Rows: {len(train_df)}")
-print(f"Engines: {train_df['engine'].nunique()}")
+    # Check there is no engine overlap
+    train_engines = set(train_df["engine"].unique())
+    validation_engines = set(validation_df["engine"].unique())
 
-print("\nValidation:")
-print(f"Rows: {len(validation_df)}")
-print(f"Engines: {validation_df['engine'].nunique()}")
+    assert train_engines.isdisjoint(validation_engines)
 
+    # Check RUL exists
+    assert "RUL" in train_df.columns
+    assert "RUL" in validation_df.columns
 
-# Check for engine overlap
-train_engines = set(train_df["engine"].unique())
-validation_engines = set(validation_df["engine"].unique())
-
-overlap = train_engines.intersection(
-    validation_engines
-)
-
-print("\nEngine overlap:")
-print(overlap)
-
-print("\nTraining RUL range:")
-print(
-    train_df["RUL"].min(),
-    "to",
-    train_df["RUL"].max()
-)
-
-print("\nValidation RUL range:")
-print(
-    validation_df["RUL"].min(),
-    "to",
-    validation_df["RUL"].max()
-)
+    # Check expected RUL ranges
+    assert train_df["RUL"].min() == 0
+    assert validation_df["RUL"].min() == 0
