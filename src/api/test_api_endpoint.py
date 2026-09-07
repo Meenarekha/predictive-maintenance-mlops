@@ -1,8 +1,9 @@
-import json
-import urllib.request
+from fastapi.testclient import TestClient
+
+from main import app
 
 
-API_URL = "http://127.0.0.1:8000/predict"
+client = TestClient(app)
 
 
 def test_predict_endpoint():
@@ -27,21 +28,14 @@ def test_predict_endpoint():
         "low_pressure_turbine_cool_air_flow": 1.0,
     }
 
-    request_body = json.dumps(request_data).encode("utf-8")
-
-    request = urllib.request.Request(
-        API_URL,
-        data=request_body,
-        headers={"Content-Type": "application/json"},
-        method="POST",
+    response = client.post(
+        "/predict",
+        json=request_data
     )
 
-    with urllib.request.urlopen(request) as response:
-        assert response.status == 200
+    assert response.status_code == 200
 
-        result = json.loads(
-            response.read().decode("utf-8")
-        )
+    result = response.json()
 
     assert "predicted_RUL" in result
     assert isinstance(result["predicted_RUL"], float)
