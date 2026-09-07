@@ -36,12 +36,21 @@ app = FastAPI(
     version="1.0.0",
 )
 
+model = None
 
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
 
-model = joblib.load(MODEL_PATH)
+def load_model():
+    global model
 
+    if model is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(
+                f"Model not found: {MODEL_PATH}"
+            )
+
+        model = joblib.load(MODEL_PATH)
+
+    return model
 
 class PredictionRequest(BaseModel):
     cycle: float
@@ -85,7 +94,7 @@ def predict(request: PredictionRequest):
         columns=FEATURE_COLUMNS,
     )
 
-    prediction = model.predict(input_data)[0]
+    prediction = load_model().predict(input_data)[0]
 
     return {
         "predicted_RUL": round(float(prediction), 2)

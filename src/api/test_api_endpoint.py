@@ -1,12 +1,32 @@
+import sys
+
+sys.path.append("src/api")
+
 from fastapi.testclient import TestClient
+from sklearn.dummy import DummyRegressor
 
-from main import app
-
-
-client = TestClient(app)
+import main
 
 
-def test_predict_endpoint():
+def test_predict_endpoint(monkeypatch):
+    # Create a simple test model
+    test_model = DummyRegressor(strategy="constant", constant=100.0)
+
+    # Train it with the expected 18 features
+    test_model.fit(
+        [[0] * 18],
+        [100.0]
+    )
+
+    # Replace the production model with the test model
+    monkeypatch.setattr(
+        main,
+        "model",
+        test_model
+    )
+
+    client = TestClient(main.app)
+
     request_data = {
         "cycle": 100,
         "setting_1": 0.0023,
@@ -39,3 +59,4 @@ def test_predict_endpoint():
 
     assert "predicted_RUL" in result
     assert isinstance(result["predicted_RUL"], float)
+    assert result["predicted_RUL"] == 100.0
