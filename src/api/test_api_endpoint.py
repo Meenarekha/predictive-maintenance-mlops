@@ -8,26 +8,8 @@ from sklearn.dummy import DummyRegressor
 import main
 
 
-def test_predict_endpoint(monkeypatch):
-    # Create a simple test model
-    test_model = DummyRegressor(strategy="constant", constant=100.0)
-
-    # Train it with the expected 18 features
-    test_model.fit(
-        [[0] * 18],
-        [100.0]
-    )
-
-    # Replace the production model with the test model
-    monkeypatch.setattr(
-        main,
-        "model",
-        test_model
-    )
-
-    client = TestClient(main.app)
-
-    request_data = {
+def get_valid_request():
+    return {
         "cycle": 100,
         "setting_1": 0.0023,
         "setting_2": -0.0003,
@@ -48,9 +30,41 @@ def test_predict_endpoint(monkeypatch):
         "low_pressure_turbine_cool_air_flow": 1.0,
     }
 
+
+def test_health_endpoint():
+    client = TestClient(main.app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
+
+
+def test_predict_endpoint(monkeypatch):
+    # Create a simple test model
+    test_model = DummyRegressor(
+        strategy="constant",
+        constant=100.0
+    )
+
+    # Train it with the expected 18 features
+    test_model.fit(
+        [[0] * 18],
+        [100.0]
+    )
+
+    # Replace the production model with the test model
+    monkeypatch.setattr(
+        main,
+        "model",
+        test_model
+    )
+
+    client = TestClient(main.app)
+
     response = client.post(
         "/predict",
-        json=request_data
+        json=get_valid_request()
     )
 
     assert response.status_code == 200
@@ -60,3 +74,18 @@ def test_predict_endpoint(monkeypatch):
     assert "predicted_RUL" in result
     assert isinstance(result["predicted_RUL"], float)
     assert result["predicted_RUL"] == 100.0
+
+
+def test_predict_endpoint_rejects_invalid_request():
+    client = TestClient(main.app)
+
+    invalid_request = {
+        "cycle": 100
+    }
+
+    response = client.post(
+        "/predict",
+        json=invalid_request
+    )
+
+    assert response.status_code == 422
