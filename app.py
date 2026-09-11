@@ -1,12 +1,25 @@
 import os
-
 import joblib
 import numpy as np
+
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 
-MODEL_PATH = "models/final_gradient_boosting.pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "final_gradient_boosting.pkl"
+)
+
+app = FastAPI(
+    title="Aircraft Predictive Maintenance API",
+    description="Predict Remaining Useful Life (RUL) of aircraft engines.",
+    version="1.0.0",
+)
+
 
 FEATURE_COLUMNS = [
     "cycle",
@@ -30,12 +43,6 @@ FEATURE_COLUMNS = [
 ]
 
 
-app = FastAPI(
-    title="Aircraft Predictive Maintenance API",
-    description="API for predicting Remaining Useful Life (RUL) of aircraft engines.",
-    version="1.0.0",
-)
-
 model = None
 
 
@@ -45,12 +52,13 @@ def load_model():
     if model is None:
         if not os.path.exists(MODEL_PATH):
             raise FileNotFoundError(
-                f"Model not found: {MODEL_PATH}"
+                f"Model not found at {MODEL_PATH}"
             )
 
         model = joblib.load(MODEL_PATH)
 
     return model
+
 
 class PredictionRequest(BaseModel):
     cycle: float
@@ -75,23 +83,41 @@ class PredictionRequest(BaseModel):
 
 @app.get("/")
 def home():
-    return {
-        "message": "Aircraft Predictive Maintenance API is running"
-    }
+    return FileResponse(
+        os.path.join(BASE_DIR, "static", "index.html")
+    )
 
 
 @app.get("/health")
 def health():
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
 
 
 @app.post("/predict")
 def predict(request: PredictionRequest):
-    input_data = np.array(
-         [[getattr(request, feature) for feature in FEATURE_COLUMNS]]
-    )
+
+    values = [
+        request.cycle,
+        request.setting_1,
+        request.setting_2,
+        request.lpc_outlet_temperature,
+        request.hpc_outlet_temperature,
+        request.lpt_outlet_temperature,
+        request.bypass_duct_pressure,
+        request.hpc_outlet_pressure,
+        request.physical_fan_speed,
+        request.physical_core_speed,
+        request.hpc_outlet_static_pressure,
+        request.fuel_flow_to_ps30_ratio,
+        request.corrected_fan_speed,
+        request.corrected_core_speed,
+        request.bypass_ratio,
+        request.bleed_enthalpy,
+        request.high_pressure_turbine_cool_air_flow,
+        request.low_pressure_turbine_cool_air_flow,
+    ]
+
+    input_data = np.array(values).reshape(1, -1)
 
     prediction = load_model().predict(input_data)[0]
 

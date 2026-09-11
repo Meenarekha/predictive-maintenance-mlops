@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aircraft Predictive Maintenance</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 28px 40px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #374151;
+        }
+
+        input {
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .rul {
+            font-size: 52px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .good {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .error {
+            color: #b91c1c;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="header">
+        <h1>✈️ Aircraft Predictive Maintenance</h1>
+        <p>Remaining Useful Life Prediction using Machine Learning</p>
+    </div>
+
+
+    <div class="container">
+
+        <div class="card">
+
+            <h2>Engine Sensor Data</h2>
+
+            <p>
+                Enter the current sensor measurements of the aircraft engine.
+            </p>
+
+            <form id="predictionForm">
+
+                <div class="grid">
+
+                    <div class="field">
+                        <label>Cycle</label>
+                        <input type="number" id="cycle" value="100" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Setting 1</label>
+                        <input type="number" id="setting_1" value="0.002" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Setting 2</label>
+                        <input type="number" id="setting_2" value="0.0003" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>LPC Outlet Temperature</label>
+                        <input type="number" id="lpc_outlet_temperature" value="642" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HPC Outlet Temperature</label>
+                        <input type="number" id="hpc_outlet_temperature" value="1580" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>LPT Outlet Temperature</label>
+                        <input type="number" id="lpt_outlet_temperature" value="1400" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Bypass Duct Pressure</label>
+                        <input type="number" id="bypass_duct_pressure" value="47" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HPC Outlet Pressure</label>
+                        <input type="number" id="hpc_outlet_pressure" value="550" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Physical Fan Speed</label>
+                        <input type="number" id="physical_fan_speed" value="2388" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Physical Core Speed</label>
+                        <input type="number" id="physical_core_speed" value="9040" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HPC Static Pressure</label>
+                        <input type="number" id="hpc_outlet_static_pressure" value="47" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Fuel Flow / PS30</label>
+                        <input type="number" id="fuel_flow_to_ps30_ratio" value="521" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Corrected Fan Speed</label>
+                        <input type="number" id="corrected_fan_speed" value="2388" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Corrected Core Speed</label>
+                        <input type="number" id="corrected_core_speed" value="9060" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Bypass Ratio</label>
+                        <input type="number" id="bypass_ratio" value="8.4" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Bleed Enthalpy</label>
+                        <input type="number" id="bleed_enthalpy" value="390" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HP Turbine Cooling Air Flow</label>
+                        <input type="number" id="high_pressure_turbine_cool_air_flow" value="8.5" step="any" required>
+                    </div>
+
+                    <div class="field">
+                        <label>LP Turbine Cooling Air Flow</label>
+                        <input type="number" id="low_pressure_turbine_cool_air_flow" value="8.4" step="any" required>
+                    </div>
+
+                </div>
+
+                <button type="submit">
+                    Predict Remaining Useful Life
+                </button>
+
+                <div id="error" class="error"></div>
+
+            </form>
+
+        </div>
+
+
+        <div id="resultCard" class="card result">
+
+            <h2>Prediction Result</h2>
+
+            <div id="status" class="status"></div>
+
+            <div id="rul" class="rul"></div>
+
+            <p id="recommendation"></p>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Aircraft Predictive Maintenance • Gradient Boosting Model • MLOps Project
+    </div>
+
+
+    <script>
+
+        const form = document.getElementById("predictionForm");
+
+        form.addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            document.getElementById("error").textContent = "";
+
+            const fields = [
+                "cycle",
+                "setting_1",
+                "setting_2",
+                "lpc_outlet_temperature",
+                "hpc_outlet_temperature",
+                "lpt_outlet_temperature",
+                "bypass_duct_pressure",
+                "hpc_outlet_pressure",
+                "physical_fan_speed",
+                "physical_core_speed",
+                "hpc_outlet_static_pressure",
+                "fuel_flow_to_ps30_ratio",
+                "corrected_fan_speed",
+                "corrected_core_speed",
+                "bypass_ratio",
+                "bleed_enthalpy",
+                "high_pressure_turbine_cool_air_flow",
+                "low_pressure_turbine_cool_air_flow"
+            ];
+
+            const data = {};
+
+            fields.forEach(function(field) {
+                data[field] = Number(
+                    document.getElementById(field).value
+                );
+            });
+
+
+            try {
+
+                const response = await fetch("/predict", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(data)
+                });
+
+
+                if (!response.ok) {
+                    throw new Error("Prediction request failed.");
+                }
+
+
+                const result = await response.json();
+
+                const rul = result.predicted_RUL;
+
+
+                document.getElementById("resultCard").style.display = "block";
+
+                document.getElementById("rul").textContent =
+                    rul + " cycles remaining";
+
+
+                const statusElement =
+                    document.getElementById("status");
+
+                const recommendation =
+                    document.getElementById("recommendation");
+
+
+                statusElement.className = "status";
+
+
+                if (rul > 100) {
+
+                    statusElement.textContent = "Healthy";
+
+                    statusElement.classList.add("good");
+
+                    recommendation.textContent =
+                        "The engine shows a relatively healthy remaining life. Continue normal monitoring.";
+
+                }
+                else if (rul > 50) {
+
+                    statusElement.textContent = "Monitor";
+
+                    statusElement.classList.add("warning");
+
+                    recommendation.textContent =
+                        "The engine should be monitored closely and maintenance planning should begin.";
+
+                }
+                else {
+
+                    statusElement.textContent = "Critical";
+
+                    statusElement.classList.add("critical");
+
+                    recommendation.textContent =
+                        "Low remaining useful life detected. Schedule maintenance inspection as soon as possible.";
+
+                }
+
+            }
+            catch (error) {
+
+                document.getElementById("error").textContent =
+                    "Unable to connect to the prediction service.";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
