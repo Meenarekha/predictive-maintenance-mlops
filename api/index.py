@@ -80,21 +80,21 @@ class PredictionRequest(BaseModel):
     low_pressure_turbine_cool_air_flow: float
 
 
-@app.get("/")
+@app.get("/api")
 def home():
     return {
         "message": "Aircraft Predictive Maintenance API is running"
     }
 
 
-@app.get("/health")
+@app.get("/api/health")
 def health():
     return {
         "status": "healthy"
     }
 
 
-@app.post("/predict")
+@app.post("/api/predict")
 def predict(request: PredictionRequest):
 
     input_data = np.array([
