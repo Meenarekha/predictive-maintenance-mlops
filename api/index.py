@@ -1,12 +1,17 @@
 import os
-
 import joblib
-import pandas as pd
+import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 
-MODEL_PATH = "models/final_gradient_boosting.pkl"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "final_gradient_boosting.pkl"
+)
+
 
 FEATURE_COLUMNS = [
     "cycle",
@@ -36,6 +41,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 model = None
 
 
@@ -45,12 +51,13 @@ def load_model():
     if model is None:
         if not os.path.exists(MODEL_PATH):
             raise FileNotFoundError(
-                f"Model not found: {MODEL_PATH}"
+                f"Model not found at: {MODEL_PATH}"
             )
 
         model = joblib.load(MODEL_PATH)
 
     return model
+
 
 class PredictionRequest(BaseModel):
     cycle: float
@@ -73,26 +80,29 @@ class PredictionRequest(BaseModel):
     low_pressure_turbine_cool_air_flow: float
 
 
-@app.get("/api")
+@app.get("/")
 def home():
     return {
         "message": "Aircraft Predictive Maintenance API is running"
     }
 
 
-@app.get("/api/health")
+@app.get("/health")
 def health():
     return {
         "status": "healthy"
     }
 
 
-@app.post("/api/predict")
+@app.post("/predict")
 def predict(request: PredictionRequest):
-    input_data = pd.DataFrame(
-        [[getattr(request, feature) for feature in FEATURE_COLUMNS]],
-        columns=FEATURE_COLUMNS,
-    )
+
+    input_data = np.array([
+        [
+            getattr(request, feature)
+            for feature in FEATURE_COLUMNS
+        ]
+    ])
 
     prediction = load_model().predict(input_data)[0]
 
