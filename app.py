@@ -1,7 +1,7 @@
 import os
 
 import joblib
-import pandas as pd
+import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -89,9 +89,8 @@ def health():
 
 @app.post("/predict")
 def predict(request: PredictionRequest):
-    input_data = pd.DataFrame(
-        [[getattr(request, feature) for feature in FEATURE_COLUMNS]],
-        columns=FEATURE_COLUMNS,
+    input_data = np.array(
+         [[getattr(request, feature) for feature in FEATURE_COLUMNS]]
     )
 
     prediction = load_model().predict(input_data)[0]
