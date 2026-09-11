@@ -1,9 +1,15 @@
-import sys
 import os
+os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
+
+import sys
+import mlflow
+
+mlflow.set_tracking_uri("file:///tmp/mlruns-test")
 
 sys.path.append("src/data")
 sys.path.append("src/features")
 sys.path.append("src/models")
+
 
 from data_ingestion import load_training_data
 from preprocessing import add_rul_column
