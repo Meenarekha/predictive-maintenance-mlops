@@ -1,440 +1,1332 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Aircraft Predictive Maintenance</title>
+    <title>AeroGuard AI | Predictive Maintenance</title>
 
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070b14;
+            --panel: #0d1422;
+            --panel-light: #111b2d;
+            --border: rgba(148, 163, 184, 0.13);
+            --text: #f1f5f9;
+            --muted: #8492a6;
+            --cyan: #22d3ee;
+            --blue: #3b82f6;
+            --green: #34d399;
+            --yellow: #fbbf24;
+            --red: #fb7185;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 85% 5%,
+                    rgba(34, 211, 238, 0.09),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 10% 20%,
+                    rgba(59, 130, 246, 0.07),
+                    transparent 25%
+                ),
+                var(--bg);
+
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        .header {
-            background: #111827;
-            color: white;
-            padding: 28px 40px;
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            height: 76px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 11, 20, 0.88);
+            backdrop-filter: blur(18px);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 42px;
+
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .header h1 {
-            margin: 0 0 8px;
-            font-size: 28px;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
 
-        .header p {
-            margin: 0;
-            color: #cbd5e1;
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(34, 211, 238, 0.18),
+                    rgba(59, 130, 246, 0.18)
+                );
+
+            border: 1px solid rgba(34, 211, 238, 0.25);
+
+            font-size: 21px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .brand h1 {
+            font-size: 17px;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .brand span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            margin-top: 3px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color: #b7c3d4;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+        }
+
+        .pulse {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 0 5px rgba(52, 211, 153, 0.08);
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            max-width: 1380px;
+            margin: auto;
+            padding: 38px 28px 60px;
+        }
+
+        .hero {
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .hero h2 {
+            font-size: clamp(30px, 4vw, 48px);
+            line-height: 1.05;
+            letter-spacing: -0.035em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            max-width: 680px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           TOP CARDS
+        ========================= */
+
+        .overview {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 18px;
+            margin-bottom: 20px;
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 27, 45, 0.95),
+                    rgba(10, 16, 28, 0.96)
+                );
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.25),
+                inset 0 1px rgba(255, 255, 255, 0.025);
+        }
+
+        .engine-card {
             padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            min-height: 235px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .card h2 {
-            margin-top: 0;
-            color: #111827;
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .grid {
+        .label {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .engine-number {
+            font-size: 36px;
+            font-weight: 750;
+            margin-top: 7px;
+        }
+
+        .operational {
+            color: var(--green);
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+        }
+
+        .engine-graphic {
+            height: 82px;
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(34, 211, 238, 0.02),
+                    rgba(34, 211, 238, 0.08),
+                    rgba(34, 211, 238, 0.02)
+                );
+
+            border: 1px solid rgba(34, 211, 238, 0.08);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .engine-graphic::before {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 1px;
+            background: rgba(34, 211, 238, 0.25);
+        }
+
+        .engine-graphic::after {
+            content: "✈";
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.12;
+        }
+
+        .rul-card {
+            padding: 25px;
+            min-height: 235px;
+        }
+
+        .rul-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 175px;
+        }
+
+        .rul-number {
+            font-size: clamp(52px, 7vw, 82px);
+            line-height: 1;
+            font-weight: 800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #8de8f5
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .rul-unit {
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            margin-top: 9px;
+        }
+
+        .rul-ring {
+            width: 142px;
+            height: 142px;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #0c1525 57%,
+                    transparent 58%
+                ),
+                conic-gradient(
+                    var(--cyan) 0deg,
+                    var(--blue) 240deg,
+                    rgba(255,255,255,0.05) 240deg
+                );
+
+            box-shadow:
+                0 0 35px rgba(34, 211, 238, 0.09);
+        }
+
+        .ring-inner {
+            text-align: center;
+        }
+
+        .ring-inner strong {
+            font-size: 26px;
+        }
+
+        .ring-inner small {
+            display: block;
+            color: var(--muted);
+            font-size: 9px;
+            margin-top: 4px;
+            letter-spacing: 0.1em;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            margin-top: 20px;
+            padding: 24px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title h3 {
+            font-size: 15px;
+            letter-spacing: 0.02em;
+        }
+
+        .section-title-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(34, 211, 238, 0.08);
+            color: var(--cyan);
+            font-size: 13px;
+        }
+
+        .section-tag {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+        }
+
+        /* =========================
+           INPUT GRID
+        ========================= */
+
+        .group-title {
+            color: #9caabd;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.17em;
+            margin: 25px 0 13px;
+        }
+
+        .sensor-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
         .field {
-            display: flex;
-            flex-direction: column;
+            background: rgba(255, 255, 255, 0.018);
+            border: 1px solid rgba(148, 163, 184, 0.10);
+            border-radius: 11px;
+            padding: 13px;
+
+            transition:
+                border-color 0.2s,
+                background 0.2s,
+                transform 0.2s;
         }
 
-        label {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 7px;
-            color: #374151;
+        .field:hover {
+            border-color: rgba(34, 211, 238, 0.25);
+            background: rgba(34, 211, 238, 0.025);
+            transform: translateY(-1px);
         }
 
-        input {
-            padding: 11px;
-            border: 1px solid #d1d5db;
-            border-radius: 7px;
-            font-size: 14px;
+        .field label {
+            display: block;
+            color: #8290a5;
+            font-size: 10px;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #2563eb;
-        }
-
-        button {
+        .field input {
             width: 100%;
-            margin-top: 25px;
-            padding: 14px;
+
+            background: transparent;
             border: none;
-            border-radius: 8px;
-            background: #2563eb;
+            outline: none;
+
+            color: #f8fafc;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .field input:focus {
+            color: var(--cyan);
+        }
+
+        .field input::-webkit-inner-spin-button,
+        .field input::-webkit-outer-spin-button {
+            opacity: 0.35;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .predict-area {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #predictButton {
+            width: min(500px, 100%);
+
+            border: 0;
+            border-radius: 12px;
+
+            padding: 16px 24px;
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #0891b2,
+                    #2563eb
+                );
+
             color: white;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 750;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+
             cursor: pointer;
+
+            box-shadow:
+                0 12px 30px rgba(37, 99, 235, 0.22);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        #predictButton:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 18px 35px rgba(37, 99, 235, 0.30);
         }
 
-        .result {
+        #predictButton:active {
+            transform: translateY(0);
+        }
+
+        #predictButton.loading {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        #resultCard {
             display: none;
-            text-align: center;
-            padding: 30px;
         }
 
-        .rul {
-            font-size: 52px;
-            font-weight: bold;
-            margin: 15px 0;
+        .result-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .status {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
+        .result-main {
+            padding: 24px;
+
+            border-radius: 14px;
+            background: rgba(255,255,255,0.018);
+            border: 1px solid var(--border);
         }
 
-        .good {
-            background: #dcfce7;
-            color: #166534;
+        .result-value {
+            font-size: 50px;
+            font-weight: 800;
+            margin: 13px 0 5px;
         }
 
-        .warning {
-            background: #fef3c7;
-            color: #92400e;
+        .result-cycles {
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 0.13em;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 11px;
+
+            border-radius: 30px;
+
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: 0.12em;
+        }
+
+        .status-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .healthy {
+            background: rgba(52, 211, 153, 0.09);
+            color: var(--green);
+        }
+
+        .monitor {
+            background: rgba(251, 191, 36, 0.09);
+            color: var(--yellow);
         }
 
         .critical {
-            background: #fee2e2;
-            color: #991b1b;
+            background: rgba(251, 113, 133, 0.09);
+            color: var(--red);
         }
 
-        .error {
-            color: #b91c1c;
+        .recommendation {
+            padding: 24px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(34,211,238,0.035),
+                    rgba(59,130,246,0.025)
+                );
+
+            border: 1px solid rgba(34, 211, 238, 0.10);
+        }
+
+        .recommendation h4 {
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation p {
+            color: #9aa8ba;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        #error {
+            display: none;
+
             margin-top: 15px;
-            font-weight: bold;
+            padding: 12px;
+
+            text-align: center;
+
+            color: var(--red);
+            background: rgba(251, 113, 133, 0.06);
+            border: 1px solid rgba(251, 113, 133, 0.12);
+            border-radius: 9px;
+
+            font-size: 12px;
         }
 
-        .footer {
-            text-align: center;
-            padding: 25px;
-            color: #6b7280;
-            font-size: 14px;
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            max-width: 1380px;
+            margin: auto;
+
+            padding: 25px 28px 35px;
+
+            display: flex;
+            justify-content: space-between;
+
+            color: #58667a;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+
+            border-top: 1px solid var(--border);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+            .sensor-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 800px) {
-            .grid {
+            header {
+                padding: 0 20px;
+            }
+
+            main {
+                padding: 28px 16px 45px;
+            }
+
+            .overview,
+            .result-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sensor-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .system-status {
+                display: none;
             }
         }
 
         @media (max-width: 500px) {
-            .grid {
+            .sensor-grid {
                 grid-template-columns: 1fr;
             }
 
-            .header {
-                padding: 25px 20px;
+            .rul-content {
+                gap: 20px;
+            }
+
+            .rul-ring {
+                width: 110px;
+                height: 110px;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 8px;
             }
         }
     </style>
 </head>
 
-
 <body>
 
-    <div class="header">
-        <h1>✈️ Aircraft Predictive Maintenance</h1>
-        <p>Remaining Useful Life Prediction using Machine Learning</p>
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ✈
+        </div>
+
+        <div>
+            <h1>AEROGUARD AI</h1>
+            <span>PREDICTIVE MAINTENANCE INTELLIGENCE</span>
+        </div>
+
     </div>
 
+    <div class="system-status">
+        <div class="pulse"></div>
+        AI ENGINE ONLINE
+    </div>
 
-    <div class="container">
+</header>
 
-        <div class="card">
 
-            <h2>Engine Sensor Data</h2>
+<main>
 
-            <p>
-                Enter the current sensor measurements of the aircraft engine.
-            </p>
+    <section class="hero">
 
-            <form id="predictionForm">
+        <div class="eyebrow">
+            AIRCRAFT ENGINE MONITORING SYSTEM
+        </div>
 
-                <div class="grid">
+        <h2>
+            Predict failure<br>
+            before it happens.
+        </h2>
 
-                    <div class="field">
-                        <label>Cycle</label>
-                        <input type="number" id="cycle" value="100" step="any" required>
+        <p>
+            Machine-learning powered Remaining Useful Life estimation
+            using aircraft engine telemetry and sensor measurements.
+        </p>
+
+    </section>
+
+
+    <!-- ======================
+         OVERVIEW
+    ======================= -->
+
+    <div class="overview">
+
+        <div class="card engine-card">
+
+            <div class="card-top">
+
+                <div>
+                    <div class="label">
+                        MONITORED ASSET
                     </div>
 
-                    <div class="field">
-                        <label>Setting 1</label>
-                        <input type="number" id="setting_1" value="0.002" step="any" required>
+                    <div class="engine-number">
+                        ENGINE
+                    </div>
+                </div>
+
+                <div class="operational">
+                    ● OPERATIONAL
+                </div>
+
+            </div>
+
+            <div class="engine-graphic">
+                ✈
+            </div>
+
+        </div>
+
+
+        <div class="card rul-card">
+
+            <div class="label">
+                AI REMAINING USEFUL LIFE ESTIMATE
+            </div>
+
+            <div class="rul-content">
+
+                <div>
+
+                    <div
+                        id="topRul"
+                        class="rul-number"
+                    >
+                        —
                     </div>
 
-                    <div class="field">
-                        <label>Setting 2</label>
-                        <input type="number" id="setting_2" value="0.0003" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>LPC Outlet Temperature</label>
-                        <input type="number" id="lpc_outlet_temperature" value="642" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>HPC Outlet Temperature</label>
-                        <input type="number" id="hpc_outlet_temperature" value="1580" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>LPT Outlet Temperature</label>
-                        <input type="number" id="lpt_outlet_temperature" value="1400" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Bypass Duct Pressure</label>
-                        <input type="number" id="bypass_duct_pressure" value="47" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>HPC Outlet Pressure</label>
-                        <input type="number" id="hpc_outlet_pressure" value="550" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Physical Fan Speed</label>
-                        <input type="number" id="physical_fan_speed" value="2388" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Physical Core Speed</label>
-                        <input type="number" id="physical_core_speed" value="9040" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>HPC Static Pressure</label>
-                        <input type="number" id="hpc_outlet_static_pressure" value="47" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Fuel Flow / PS30</label>
-                        <input type="number" id="fuel_flow_to_ps30_ratio" value="521" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Corrected Fan Speed</label>
-                        <input type="number" id="corrected_fan_speed" value="2388" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Corrected Core Speed</label>
-                        <input type="number" id="corrected_core_speed" value="9060" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Bypass Ratio</label>
-                        <input type="number" id="bypass_ratio" value="8.4" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>Bleed Enthalpy</label>
-                        <input type="number" id="bleed_enthalpy" value="390" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>HP Turbine Cooling Air Flow</label>
-                        <input type="number" id="high_pressure_turbine_cool_air_flow" value="8.5" step="any" required>
-                    </div>
-
-                    <div class="field">
-                        <label>LP Turbine Cooling Air Flow</label>
-                        <input type="number" id="low_pressure_turbine_cool_air_flow" value="8.4" step="any" required>
+                    <div class="rul-unit">
+                        ESTIMATED CYCLES REMAINING
                     </div>
 
                 </div>
 
-                <button type="submit">
-                    Predict Remaining Useful Life
+
+                <div class="rul-ring">
+
+                    <div class="ring-inner">
+
+                        <strong id="ringValue">
+                            —
+                        </strong>
+
+                        <small>
+                            RUL
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================
+         SENSOR INPUT
+    ======================= -->
+
+    <section class="card section">
+
+        <div class="section-heading">
+
+            <div class="section-title">
+
+                <div class="section-title-icon">
+                    ◈
+                </div>
+
+                <h3>
+                    Engine Telemetry
+                </h3>
+
+            </div>
+
+            <div class="section-tag">
+                18 SENSOR FEATURES
+            </div>
+
+        </div>
+
+
+        <form id="predictionForm">
+
+
+            <div class="group-title">
+                Operating Conditions
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>Cycle</label>
+                    <input id="cycle" type="number" value="100" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Setting 1</label>
+                    <input id="setting_1" type="number" value="0.002" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Setting 2</label>
+                    <input id="setting_2" type="number" value="0.0003" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div class="group-title">
+                Temperature Monitoring
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>LPC Outlet Temperature</label>
+                    <input id="lpc_outlet_temperature" type="number" value="642" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>HPC Outlet Temperature</label>
+                    <input id="hpc_outlet_temperature" type="number" value="1580" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>LPT Outlet Temperature</label>
+                    <input id="lpt_outlet_temperature" type="number" value="1400" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div class="group-title">
+                Pressure Monitoring
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>Bypass Duct Pressure</label>
+                    <input id="bypass_duct_pressure" type="number" value="554" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>HPC Outlet Pressure</label>
+                    <input id="hpc_outlet_pressure" type="number" value="9060" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>HPC Static Pressure</label>
+                    <input id="hpc_outlet_static_pressure" type="number" value="47" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div class="group-title">
+                Engine Speed
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>Physical Fan Speed</label>
+                    <input id="physical_fan_speed" type="number" value="2388" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Physical Core Speed</label>
+                    <input id="physical_core_speed" type="number" value="8147" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Corrected Fan Speed</label>
+                    <input id="corrected_fan_speed" type="number" value="2388" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Corrected Core Speed</label>
+                    <input id="corrected_core_speed" type="number" value="8147" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div class="group-title">
+                Engine Performance
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>Fuel Flow / PS30</label>
+                    <input id="fuel_flow_to_ps30_ratio" type="number" value="522" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Bypass Ratio</label>
+                    <input id="bypass_ratio" type="number" value="8.35" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>Bleed Enthalpy</label>
+                    <input id="bleed_enthalpy" type="number" value="38.8" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div class="group-title">
+                Turbine Cooling
+            </div>
+
+            <div class="sensor-grid">
+
+                <div class="field">
+                    <label>HP Turbine Cooling Air Flow</label>
+                    <input id="high_pressure_turbine_cool_air_flow" type="number" value="392" step="any" required>
+                </div>
+
+                <div class="field">
+                    <label>LP Turbine Cooling Air Flow</label>
+                    <input id="low_pressure_turbine_cool_air_flow" type="number" value="23.38" step="any" required>
+                </div>
+
+            </div>
+
+
+            <div id="error"></div>
+
+
+            <div class="predict-area">
+
+                <button
+                    id="predictButton"
+                    type="submit"
+                >
+                    ⚡ Run AI Prediction
                 </button>
 
-                <div id="error" class="error"></div>
+            </div>
 
-            </form>
+        </form>
+
+    </section>
+
+
+    <!-- ======================
+         RESULT
+    ======================= -->
+
+    <section
+        id="resultCard"
+        class="card section"
+    >
+
+        <div class="section-heading">
+
+            <div class="section-title">
+
+                <div class="section-title-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    Prediction Intelligence
+                </h3>
+
+            </div>
+
+            <div class="section-tag">
+                MODEL RESPONSE
+            </div>
 
         </div>
 
 
-        <div id="resultCard" class="card result">
+        <div class="result-layout">
 
-            <h2>Prediction Result</h2>
+            <div class="result-main">
 
-            <div id="status" class="status"></div>
+                <div
+                    id="status"
+                    class="status-badge healthy"
+                >
+                    HEALTHY
+                </div>
 
-            <div id="rul" class="rul"></div>
+                <div
+                    id="rul"
+                    class="result-value"
+                >
+                    —
+                </div>
 
-            <p id="recommendation"></p>
+                <div class="result-cycles">
+                    PREDICTED REMAINING USEFUL LIFE · CYCLES
+                </div>
+
+            </div>
+
+
+            <div class="recommendation">
+
+                <h4>
+                    MAINTENANCE INTELLIGENCE
+                </h4>
+
+                <p id="recommendationText">
+                    Run a prediction to receive an AI-generated
+                    maintenance recommendation.
+                </p>
+
+            </div>
 
         </div>
 
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div>
+        AEROGUARD AI · PREDICTIVE MAINTENANCE
     </div>
 
-
-    <div class="footer">
-        Aircraft Predictive Maintenance • Gradient Boosting Model • MLOps Project
+    <div>
+        GRADIENT BOOSTING · FASTAPI · MLOPS
     </div>
 
+</footer>
 
-    <script>
 
-        const form = document.getElementById("predictionForm");
+<script>
 
-        form.addEventListener("submit", async function(event) {
+    const form = document.getElementById("predictionForm");
+
+    const button = document.getElementById("predictButton");
+
+    const errorElement = document.getElementById("error");
+
+    const resultCard = document.getElementById("resultCard");
+
+    const resultRul = document.getElementById("rul");
+
+    const topRul = document.getElementById("topRul");
+
+    const ringValue = document.getElementById("ringValue");
+
+    const status = document.getElementById("status");
+
+    const recommendation =
+        document.getElementById("recommendationText");
+
+
+    const fields = [
+
+        "cycle",
+        "setting_1",
+        "setting_2",
+
+        "lpc_outlet_temperature",
+        "hpc_outlet_temperature",
+        "lpt_outlet_temperature",
+
+        "bypass_duct_pressure",
+        "hpc_outlet_pressure",
+        "hpc_outlet_static_pressure",
+
+        "physical_fan_speed",
+        "physical_core_speed",
+        "corrected_fan_speed",
+        "corrected_core_speed",
+
+        "fuel_flow_to_ps30_ratio",
+        "bypass_ratio",
+        "bleed_enthalpy",
+
+        "high_pressure_turbine_cool_air_flow",
+        "low_pressure_turbine_cool_air_flow"
+
+    ];
+
+
+    form.addEventListener(
+        "submit",
+        async function(event) {
 
             event.preventDefault();
 
-            document.getElementById("error").textContent = "";
+            errorElement.style.display = "none";
 
-            const fields = [
-                "cycle",
-                "setting_1",
-                "setting_2",
-                "lpc_outlet_temperature",
-                "hpc_outlet_temperature",
-                "lpt_outlet_temperature",
-                "bypass_duct_pressure",
-                "hpc_outlet_pressure",
-                "physical_fan_speed",
-                "physical_core_speed",
-                "hpc_outlet_static_pressure",
-                "fuel_flow_to_ps30_ratio",
-                "corrected_fan_speed",
-                "corrected_core_speed",
-                "bypass_ratio",
-                "bleed_enthalpy",
-                "high_pressure_turbine_cool_air_flow",
-                "low_pressure_turbine_cool_air_flow"
-            ];
+            button.classList.add("loading");
+
+            button.textContent = "ANALYZING ENGINE TELEMETRY...";
+
 
             const data = {};
 
+
             fields.forEach(function(field) {
-                data[field] = Number(
-                    document.getElementById(field).value
-                );
+
+                data[field] =
+                    Number(
+                        document.getElementById(field).value
+                    );
+
             });
 
 
             try {
 
-                const response = await fetch("/predict", {
-                    method: "POST",
+                const response = await fetch(
+                    "/predict",
+                    {
+                        method: "POST",
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
 
-                    body: JSON.stringify(data)
-                });
+                        body: JSON.stringify(data)
+                    }
+                );
 
 
                 if (!response.ok) {
-                    throw new Error("Prediction request failed.");
+
+                    throw new Error(
+                        "Prediction request failed."
+                    );
+
                 }
 
 
-                const result = await response.json();
-
-                const rul = result.predicted_RUL;
-
-
-                document.getElementById("resultCard").style.display = "block";
-
-                document.getElementById("rul").textContent =
-                    rul + " cycles remaining";
+                const result =
+                    await response.json();
 
 
-                const statusElement =
-                    document.getElementById("status");
-
-                const recommendation =
-                    document.getElementById("recommendation");
+                const rul =
+                    Number(result.predicted_RUL);
 
 
-                statusElement.className = "status";
+                /* =====================
+                   UPDATE RUL
+                ===================== */
+
+                resultRul.textContent =
+                    rul.toFixed(2);
+
+                topRul.textContent =
+                    rul.toFixed(2);
+
+                ringValue.textContent =
+                    rul.toFixed(0);
+
+
+                /* =====================
+                   STATUS
+                ===================== */
+
+                status.className =
+                    "status-badge";
 
 
                 if (rul > 100) {
 
-                    statusElement.textContent = "Healthy";
+                    status.textContent =
+                        "HEALTHY";
 
-                    statusElement.classList.add("good");
+                    status.classList.add(
+                        "healthy"
+                    );
 
                     recommendation.textContent =
-                        "The engine shows a relatively healthy remaining life. Continue normal monitoring.";
+                        "The engine currently shows a relatively strong remaining life estimate. Continue normal monitoring and periodic inspection.";
 
                 }
+
                 else if (rul > 50) {
 
-                    statusElement.textContent = "Monitor";
+                    status.textContent =
+                        "MONITOR";
 
-                    statusElement.classList.add("warning");
+                    status.classList.add(
+                        "monitor"
+                    );
 
                     recommendation.textContent =
-                        "The engine should be monitored closely and maintenance planning should begin.";
+                        "The estimated remaining life has entered a monitoring range. Increase observation frequency and begin maintenance planning.";
 
                 }
+
                 else {
 
-                    statusElement.textContent = "Critical";
+                    status.textContent =
+                        "CRITICAL";
 
-                    statusElement.classList.add("critical");
+                    status.classList.add(
+                        "critical"
+                    );
 
                     recommendation.textContent =
-                        "Low remaining useful life detected. Schedule maintenance inspection as soon as possible.";
+                        "The predicted remaining useful life is low. A maintenance inspection should be scheduled as soon as operationally possible.";
 
                 }
 
+
+                resultCard.style.display =
+                    "block";
+
+
+                resultCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+
             }
+
             catch (error) {
 
-                document.getElementById("error").textContent =
-                    "Unable to connect to the prediction service.";
+                errorElement.textContent =
+                    "Unable to connect to the prediction service. Please try again.";
+
+                errorElement.style.display =
+                    "block";
 
             }
 
-        });
 
-    </script>
+            finally {
+
+                button.classList.remove(
+                    "loading"
+                );
+
+                button.textContent =
+                    "⚡ Run AI Prediction";
+
+            }
+
+        }
+    );
+
+</script>
 
 </body>
-
 </html>
